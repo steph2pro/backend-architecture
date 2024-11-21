@@ -16,6 +16,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   declare name: string | null
+  @column()
+  declare refreshToken: string
 
   @column()
   declare email: string
