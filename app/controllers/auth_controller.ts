@@ -8,19 +8,24 @@ import jwt from 'jsonwebtoken'
 // import Env from '@ioc:Adonis/Core/Env'
 import Env from '#start/env'
 import { Prisma } from '@prisma/client';
+import { log } from 'console';
 
 export default class AuthController {
 
   public async register({ request, response }: HttpContext) {
+      const {local}=request.headers()
     try {
       // Valider les données entrantes
       const { name, email, password } = await RegisterValidator.validate(request.all());
-
+      console.log(email)
       // Vérifiez si l'utilisateur existe déjà
-      const existingUser = await prisma.user.findUnique({ where: { email } });
+      const existingUser = await prisma.user.findUnique({ where: { email:email } });
+      console.log(existingUser)
       if (existingUser) {
-        return response.status(409).json({
-          message: 'A user with this email already exists',
+
+        return response.status(201).json({
+
+          message: local=='fr' ? 'l\'utilisateur existe deja': 'user already exist'
         });
       }
 
@@ -38,29 +43,25 @@ export default class AuthController {
 
       // Retourner une réponse réussie
       return response.status(201).json({
-        message: 'account registered successfully',
-        user,
+        message:  local=='fr' ? 'votre compte as ete creer avec succes': 'account registered successfully',
+        data:user,
       });
+
     } catch (error) {
       // Gestion des erreurs Prisma
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        log(error)
         return response.status(400).json({
-          message: 'A database error occurred',
+          message:  local=='fr' ? 'erreur lors de la connexion a la base de donnee': 'A database error occurred',
           error: error.message,
         });
       }
 
-      // Gestion des erreurs de validation
-      if (response.status(422)) {
-        return response.status(422).json({
-          message: 'Validation failed',
-          errors: error.messages,
-        });
-      }
+
 
       // Gestion des autres erreurs
       return response.status(500).json({
-        message: 'An unexpected error occurred',
+        message:  local=='fr' ? 'le serveur est temporairement indisponible': 'An unexpected error occurred',
         error: error.message,
       });
     }
@@ -69,6 +70,7 @@ export default class AuthController {
 // Retourner la réponse avec un statut 201
     // return response.status(201).json({ message: 'Register successful!', user });
     public async login({ request, response }: HttpContext) {
+      const {local}=request.headers()
       try {
         // Validation des données d'entrée
         const { email, password } = await LoginValidator.validate(request.only(['email', 'password']));
@@ -76,15 +78,24 @@ export default class AuthController {
         // Récupérer l'utilisateur par email
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
-          return response.unauthorized({ message: 'Invalid email' });
+
+          return response.status(201).json({
+
+            message: local=='fr' ? 'Email incorrect': 'Invalid email'
+          });
         }
 
         // Vérification du mot de passe
         const isPasswordValid = await hash.verify(user.password, password);
         if (!isPasswordValid) {
-          return response.unauthorized({ message: 'Invalid password' });
+
+          return response.status(201).json({
+
+            message: local=='fr' ? 'Mot de pass incorrect': 'Invalid password'
+          });
         }
-        const accesToken = jwt.sign({ id: user.id, email: user.email }, Env.get('APP_KEY'), {
+
+        const accesToken = jwt.sign(user, Env.get('ACCESS_TOKEN_SECRET'), {
           expiresIn: '15min',
         })
         // Génération du refresh token
@@ -106,11 +117,14 @@ export default class AuthController {
           'accesToken':accesToken
         }
         return response.status(201).json({
-          message: ' login successfully',
-          data
+          message:  local=='fr' ? 'connexion reussi': ' login successfully',
+          data:data
         });
       } catch (error) {
-        return response.internalServerError({ message: 'An error occurred while logging in', error: error.message });
+        return response.internalServerError({
+          message:  local=='fr' ? 'erreur de connection avec le serveur': 'An error occurred while logging in',
+          error: error.message
+        });
       }
     }
 
