@@ -52,6 +52,9 @@ class AuthMiddleware {
       return response.status(403).send({ message: 'Token invalide ou expiré' })
     }
   }
+
+
+
 }
 
 module.exports = AuthMiddleware

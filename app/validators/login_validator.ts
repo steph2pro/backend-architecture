@@ -2,7 +2,8 @@ import vine from '@vinejs/vine'
 
 export const LoginValidator = vine.compile(
   vine.object({
-    email: vine.string().email(),
+    identifier: vine.string(), // Validation de base
     password: vine.string().minLength(8),
   })
-)
+);
+

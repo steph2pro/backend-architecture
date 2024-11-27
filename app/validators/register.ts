@@ -4,6 +4,7 @@ export const RegisterValidator = vine.compile(
   vine.object({
     name: vine.string().minLength(3),
     email: vine.string().email(),
+    phone: vine.string().regex(/^\+?[1-9]\d{1,14}$/),
     // .unique(async (db, value, field) => {
     //   const user = await db
     //     .from('User')
