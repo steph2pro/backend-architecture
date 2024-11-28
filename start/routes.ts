@@ -27,10 +27,10 @@ router.group(() => {
 
 
 
-  router.group(()=>{
-      router.get('/users', [UsersController, 'getAllUsers'])
-  }).use(middleware.auth());
-
 }).prefix('/api');
 
 
+
+  router.group(()=>{
+      router.get('/users', [UsersController, 'getAllUsers'])
+  }).use(middleware.auth());
