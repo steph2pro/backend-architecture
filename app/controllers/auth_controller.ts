@@ -90,6 +90,8 @@ export default class AuthController {
 
       // Identifier peut être un email ou un numéro de téléphone
       const isEmail = identifier.includes('@'); // Vérification simple pour déterminer si c'est un email
+      // const aut = auth.user?.save;
+      // console.log(aut)
       const user = await prisma.user.findUnique({
         where: isEmail
           ? { email: identifier } // Recherche par email
@@ -117,7 +119,7 @@ export default class AuthController {
       });
 
       const refreshToken = jwt.sign(
-        user,
+        {id:user.id},
         Env.get('REFRESH_TOKEN_SECRET'),
         { expiresIn: '24h' }
       );
@@ -150,67 +152,80 @@ export default class AuthController {
 
     /**
    * Route protégée
-   */
-  public async profile({ auth, response }: HttpContext) {
-    const user = auth.user
-    if (!user) {
-      return response.unauthorized({ message: 'Non autorisé' })
-    }
-    return response.json({ user })
-  }
+  //  */
+  // public async profile({ auth, response }: HttpContext) {
+  //   const user = auth.user
+  //   if (!user) {
+  //     return response.unauthorized({ message: 'Non autorisé' })
+  //   }
+  //   return response.json({ user })
+  // }
 
 // Méthode pour rafraîchir l'access token
-async refreshToken({ request, params, response }: HttpContext) {
+public async refreshToken({ request, response }: HttpContext) {
+  const { local } = request.headers();
+  const { refresh_token } = request.only(['refresh_token']);
+
   try {
-    const { id } = params // Récupérer l'identifiant depuis les paramètres
-    const refreshToken = request.input('refresh_token') // Récupérer le token depuis le corps de la requête
+    // Décoder et vérifier le refresh token
+    const payload = jwt.verify(
+      refresh_token,
+      Env.get('REFRESH_TOKEN_SECRET')
+    );
 
-    if (!refreshToken) {
-      return response.status(401).send({ error: true, message: "Le token est requis" })
+    // Rechercher l'utilisateur correspondant
+
+    if (typeof payload !== 'object' || !('id' in payload)) {
+      throw new Error('Token payload invalide');
     }
 
-    // Vérifier l'existence de l'utilisateur
-    const userDB = await prisma.user.findFirst(id)
-    if (!userDB) {
-      return response.status(404).send({ error: true, message: "Utilisateur introuvable" })
+    const user = await prisma.user.findUnique({
+      where: { id: (payload as JwtPayload & { id: number }).id },
+    });
+    // console.log(user)
+
+    if (!user || user.refreshToken.includes(refresh_token)) {
+      return response.status(401).json({
+        message: local === 'fr' ? 'Token invalide' : 'Invalid token',
+      });
     }
 
-    // Vérifier si le token est valide
-    if (userDB.refreshToken!.includes(refreshToken)) {
-      return response.status(403).send({ error: true, message: "Token non valide" })
-    }
-
-    // Vérifier et générer un nouveau token si valide
-    jwt.verify(refreshToken, Env.get('REFRESH_TOKEN_SECRET'), (err, user: JwtPayload) => {
-      if (err) {
-        return response.status(403).send({ error: true, message: 'Token expiré ou non valide' })
-      }
-
-      const accessToken = this.generateAccessToken(user) // Générer un nouveau token
-      response.status(200).send({ acces_token: accessToken })
-    })
-  } catch (error) {
-    console.error(error)
-    return response.status(500).send({ error: true, message: error.message })
-  }
-}
-
- // Fonction utilitaire pour générer un access token
- generateAccessToken(user:JwtPayload): String {
-  return jwt.sign(user,  Env.get('ACCESS_TOKEN_SECRET'), { expiresIn: '10m' })
-}
-
-// Obtenir les informations de l'utilisateur connecté
-public async getUser({ auth, response }: HttpContext) {
-  try {
-    // Récupérer l'utilisateur connecté
-    const user = await auth.use('api').authenticate()
-    return response.ok({
+    // Générer de nouveaux tokens
+    const accessToken = jwt.sign(
       user,
-    })
+      Env.get('ACCESS_TOKEN_SECRET'),
+      { expiresIn: '15min' }
+    );
+
+    const newRefreshToken = jwt.sign(
+      { id: user.id },
+      Env.get('REFRESH_TOKEN_SECRET'),
+      { expiresIn: '24h' }
+    );
+
+    // Mettre à jour le refresh token en base de données
+    const updatedTokens = user.refreshToken.filter(
+      (token) => token !== refresh_token
+    );
+    updatedTokens.push(newRefreshToken);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken: updatedTokens },
+    });
+
+    return response.status(200).json({
+      message: local === 'fr' ? 'Token renouvelé' : 'Token refreshed',
+      access_token: accessToken,
+      refresh_token: newRefreshToken,
+    });
   } catch (error) {
-    return response.unauthorized({ message: 'You must be logged in' })
+    return response.status(401).json({
+      message: local === 'fr' ? 'Token invalide ou expiré' : 'Invalid or expired token',
+      error: error.message,
+    });
   }
 }
+
 
 }
