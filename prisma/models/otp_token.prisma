@@ -1,0 +1,9 @@
+model OtpToken {
+  id        Int      @id @default(autoincrement())
+  email     String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email]) // Index pour rechercher rapidement par email
+}

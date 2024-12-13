@@ -18,3 +18,13 @@ model User {
   updatedAt     DateTime  @updatedAt
   refreshToken  String[]  // Tableau de chaînes, non nul, vide par défaut
 }
+model OtpToken {
+  id        Int      @id @default(autoincrement())
+  email     String
+  phone     String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email]) // Index pour rechercher rapidement par email
+}
