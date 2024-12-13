@@ -8,7 +8,6 @@ tmp
 .env.local
 .env.production.local
 .env.development.local
-firebase-service-account.json
 # Frontend assets compiled code
 public/assets
 
