@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .main-container{
+          max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 60px;
+        }
+        .container {
+
+            display: flex;
+        }
+        .name-container{
+          margin-bottom: 20px;
+        }
+        .name-container h1{
+          font-size: 38px;
+          margin: 0;
+          font-weight: bold;
+          color: #000;
+        }
+        .name-container h2{
+          font-size: 18px;
+          margin: 5px 0 20px;
+          font-weight: normal;
+          color: #555;
+
+        }
+        .sidebar {
+            width: 35%;
+            padding-right: 20px;
+            border-right: 1px solid #ddd;
+            border-top: 1px solid #ddd;
+        }
+        .sidebar .section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar .section h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        h3{
+          text-transform: uppercase;
+          text-decoration: underline;
+          margin: 25px 10px 0px 0;
+        }
+
+        .sidebar .section p {
+            font-size: 14px;
+            margin: 5px 0;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .skills .skill {
+            margin-bottom: 10px;
+        }
+
+        .skills .skill p {
+            margin: 0;
+            font-size: 14px;
+        }
+        data{
+          color: #555;
+        }
+        .skills .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            height: 3px;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .skills .progress-bar span {
+            display: block;
+            height: 100%;
+            background-color: #000;
+        }
+
+        .main-content {
+            width: 65%;
+            border-top: 1px solid #ddd;
+            padding-left: 30px;
+        }
+
+        .main-content .section {
+            margin-bottom: 20px;
+        }
+
+        .main-content .section h4 {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .main-content .section p,
+        .main-content .section ul li {
+            font-size: 14px;
+            margin: 5px 0;
+            line-height: 1.6;
+        }
+
+        .main-content .section ul {
+            padding-left: 20px;
+            list-style: disc;
+        }
+    </style>
+</head>
+<body>
+  <div class="main-container">
+            <div class="name-container">
+              <h1>RICK TANG</h1>
+              <h2>Product Designer</h2>
+            </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="section">
+                <h3>Details</h3>
+                <p><h4>Address:</h4> <data> Francisco, California</data></p>
+                <p><h4>Phone:</h4> <data>(315) 802-8179</data></p>
+                <p><h4>Email:</h4><data>ricktang@gmail.com</data> </p>
+            </div>
+
+            <div class="section">
+                <h3>Links</h3>
+                <p><data>LinkedIn</data></p>
+                <p><data>Dribbble</data></p>
+                <p><data>Behance</data></p>
+            </div>
+
+            <div class="section skills">
+                <h3>Skills</h3>
+                <div class="skill">
+                    <data>Figma</data>
+                    <div class="progress-bar"><span style="width: 90%;"></span></div>
+                </div>
+                <div class="skill">
+                    <data>Sketch</data>
+                    <div class="progress-bar"><span style="width: 80%;"></span></div>
+                </div>
+                <div class="skill">
+                    <data>Adobe Photoshop</data>
+                    <div class="progress-bar"><span style="width: 85%;"></span></div>
+                </div>
+                <div class="skill">
+                    <data>Adobe Illustrator</data>
+                    <div class="progress-bar"><span style="width: 75%;"></span></div>
+                </div>
+                <div class="skill">
+                    <data>Principle</data>
+                    <div class="progress-bar"><span style="width: 70%;"></span></div>
+                </div>
+                <div class="skill">
+                    <data>Adobe XD</data>
+                    <div class="progress-bar"><span style="width: 90%;"></span></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Languages</h3>
+                <p>English</p>
+                <p>Italian</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h3>Profile</h3>
+                <p>UX/UI specialist focused on designing clean and functional projects across all platforms and devices in response to specific briefs and problems, while always maintaining a unique look and feel.</p>
+            </div>
+
+            <div class="section">
+                <h3>Experience</h3>
+                <h4>Uber - Product Designer (Mar 2015 - Present)</h4>
+                <ul>
+                    <li>Designed safety-focused experiences for Riders and Drivers</li>
+                    <li>Physical space problem solving and its interaction with the digital</li>
+                    <li>Navigation organization to achieve operational improvements</li>
+                </ul>
+                <h4>IFTTT - Product Designer (Dec 2014 - Mar 2015)</h3>
+                <ul>
+                    <li>Produced product and system design for a complex product</li>
+                    <li>Designed both consumer and developer products for IFTTT</li>
+                    <li>Responsible for maintaining design across iOS, Android, and web</li>
+                </ul>
+                <h4>Facebook - Product Designer (June 2014 - Sep 2013)</h3>
+                <ul>
+                    <li>Designed and prototyped internal tools</li>
+                    <li>Worked with Privacy team to build seamless end-user features</li>
+                    <li>Redesigned Newsfeed curation experience for mobile</li>
+                </ul>
+                <h4>Google Maps - UX/UI Design Intern (June 2012 - Sep 2012)</h4>
+                <ul>
+                    <li>Contributed to Maps on iOS wireframe and user experience</li>
+                    <li>Designed and prototyped onboarding experience</li>
+                    <li>Asset and feature design for Maps on Android</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>Education</h3>
+                <h4>Rhode Island School of Design</h4>
+                <p>BFA Industrial Design, Class of 2013</p>
+                <h4>Brown University</h4>
+                <p>Interdisciplinary studies, Sep 2010 - May 2013</p>
+            </div>
+        </div>
+    </div>
+
+  </div>
+</body>
+</html>

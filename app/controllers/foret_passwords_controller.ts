@@ -32,44 +32,12 @@ export default class ForetPasswordsController {
       if (!user) {
         return response.status(404).json({ message: 'Utilisateur non trouvé' });
       }
-
-      // Générer un OTP de 4 chiffres
-      const otp = Math.floor(1000 + Math.random() * 9000).toString();
-
-      // Enregistrer l'OTP dans la table OtpToken
-      const expiresAt = DateTime.now().plus({ hour: 1 }).toJSDate();
-
-      await prisma.otpToken.create({
-        data: {
-          email: '', // Pas d'email pour ce cas
-          phone: identifier,
-          otp,
-          expiresAt,
-        },
+      return response.status(200).json({
+        message: 'numero trouve ',
+        phone: identifier,
       });
-
-
-
-
-
-    try {
-      // Envoi de l'OTP et récupération de l'ID de vérification
-      const verificationId = await FirebaseService.sendOtp(identifier);
-      return response.json({
-        message: 'OTP envoyé avec succès',
-        verificationId: verificationId,
-      });
-    } catch (error) {
-      return response.status(500).json({
-        message: 'Erreur lors de l’envoi de l’OTP',
-        error: error.message,
-      });
-    }
 
   }
-
-
-
     // Si c'est un email, suivre la logique existante
     const user = await prisma.user.findUnique({
       where: { email: identifier },

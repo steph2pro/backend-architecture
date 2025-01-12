@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient CV Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .image-name{
+            display: flex;
+
+        }
+
+        .sidebar {
+            width: 30%;
+            background: linear-gradient(
+              to bottom,
+              #ffe259,
+              beige,
+              #ffffff 40%,
+              aliceblue 90%,
+              #add8e6
+            );
+            color: #333;
+            padding: 30px;
+            padding-top: 155px;
+        }
+
+        .image-name img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 15px;
+        }
+
+        .name p {
+            font-size: 34px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .name b {
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .sidebar .section {
+          margin-bottom: 20px;
+      }
+
+      .sidebar .section h3 {
+          font-size: 18px;
+          margin-bottom: 10px;
+          letter-spacing: 1px;
+          font-weight: bold;
+      }
+      h3{
+        margin: 25px 10px 0px 0;
+      }
+
+      .sidebar .section p {
+          font-size: 14px;
+          margin: 5px 0;
+          line-height: 1.6;
+          text-align: justify;
+      }
+
+      .skills .skill {
+          margin-bottom: 10px;
+      }
+
+      .skills .skill p {
+          margin: 0;
+          font-size: 14px;
+      }
+      data{
+        color: #555;
+      }
+      .skills .progress-bar {
+          width: 100%;
+          background-color: #e0e0e0;
+          height: 3px;
+          border-radius: 4px;
+          margin-top: 5px;
+          margin-bottom: 20px;
+          overflow: hidden;
+      }
+
+      .skills .progress-bar span {
+          display: block;
+          height: 100%;
+          background-color: #000;
+      }
+
+
+        .main-content {
+            width: 70%;
+            padding: 40px;
+        }
+
+        .main-content h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+            padding-bottom: 5px;
+        }
+
+        .main-content .section {
+            margin-bottom: 20px;
+        }
+
+        .main-content .section h3 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #555;
+          margin-bottom: -11px;
+        }
+        .main-content .section h4{
+          margin-bottom: -10px;
+        }
+
+        .main-content .section p {
+            font-size: 14px;
+            margin: 5px 0;
+            line-height: 1.6;
+            color: #666;
+            text-align: justify;
+            margin-top: 10px;
+        }
+
+        .main-content .section ul {
+            margin: 10px 0 0;
+            padding-left: 20px;
+            list-style: disc;
+        }
+
+        .main-content .section ul li {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+      <div class="main-content">
+        <div class="image-name">
+          <img src="profile.jpg" alt="Profile Picture">
+          <div class="name">
+             <p>Rick Tang</p>
+             <b>Product Designer</b>
+          </div>
+        </div>
+
+        <div class="section">
+            <h2>Profile</h2>
+            <p>I’m a product designer focused on ensuring great user experience and meeting business needs of designed products. I’m also experienced in implementing prototypes to make designs production-ready and offer seamless UX. My philosophy is to achieve thoughtful and simple experiences, while at the same time recognizing they’re never finished and constantly changing. I’m always excited to face new challenges and problems.</p>
+        </div>
+        <div class="section">
+            <h2>Experience</h2>
+            <h3>Uber</h3>
+               <h4>Product Designer </h4>
+               <h5>(Mar 2015 - Present)</h5>
+            <ul>
+                <li>Designed safety-focused experiences for Riders and Drivers</li>
+                <li>Physical space problem solving and its interaction with the digital</li>
+                <li>Navigation organization to achieve operational improvements</li>
+            </ul>
+
+            <h3>IFTTT </h3>
+               <h4>Product Designer </h4>
+               <h5>(Dec 2013 - Mar 2015)</h5>
+            <ul>
+                <li>Produced product and system design for a complex product</li>
+                <li>Designed both consumer and developer products for IFTTT</li>
+                <li>Responsible for maintaining design across iOS, Android, and web</li>
+            </ul>
+
+            <h3>Facebook </h3>
+               <h4>Product Designer </h4>
+               <h5>(June 2013 - Sep 2013)</h5>
+            <ul>
+                <li>Designed and prototyped internal tools</li>
+                <li>Worked with Privacy team to build seamless end-user features</li>
+                <li>Redesigned Newsfeed curation experience for mobile</li>
+            </ul>
+
+            <h3>Google Maps </h3>
+               <h4>UX/UI Design Intern </h4>
+               <h5>(June 2012 - Sep 2012)</h5>
+            <ul>
+                <li>Contributed to Maps on iOS wireframe and user experience</li>
+                <li>Designed and prototyped onboarding experience</li>
+                <li>Asset and feature design for Maps on Android</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h2>Education</h2>
+            <h3>Brown University</h3>
+            <p>Interdisciplinary studies, Sep 2010 - May 2013</p>
+        </div>
+    </div>
+        <div class="sidebar">
+
+          <div class="section">
+            <h2>Details</h2>
+            <p><h4>Address:</h4> <data> Francisco, California</data></p>
+            <p><h4>Phone:</h4> <data>(315) 802-8179</data></p>
+            <p><h4>Email:</h4><data>ricktang@gmail.com</data> </p>
+        </div>
+
+        <div class="section">
+            <h2>Links</h2>
+            <p><data>LinkedIn</data></p>
+            <p><data>Dribbble</data></p>
+            <p><data>Behance</data></p>
+        </div>
+
+        <div class="section skills">
+            <h2>Skills</h2>
+            <div class="skill">
+                <data>Figma</data>
+                <div class="progress-bar"><span style="width: 90%;"></span></div>
+            </div>
+            <div class="skill">
+                <data>Sketch</data>
+                <div class="progress-bar"><span style="width: 80%;"></span></div>
+            </div>
+            <div class="skill">
+                <data>Adobe Photoshop</data>
+                <div class="progress-bar"><span style="width: 85%;"></span></div>
+            </div>
+            <div class="skill">
+                <data>Adobe Illustrator</data>
+                <div class="progress-bar"><span style="width: 75%;"></span></div>
+            </div>
+            <div class="skill">
+                <data>Principle</data>
+                <div class="progress-bar"><span style="width: 70%;"></span></div>
+            </div>
+            <div class="skill">
+                <data>Adobe XD</data>
+                <div class="progress-bar"><span style="width: 90%;"></span></div>
+            </div>
+        </div>
+        </div>
+
+    </div>
+</body>
+</html>

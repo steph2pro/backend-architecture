@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV - Rick Tang</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .header {
+      text-align: center;
+      padding: 20px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .header img {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .header p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    .header .contact-info a{
+      text-decoration: none;
+      color: #444;
+    }
+    .header .contact-info {
+      margin-top: 20px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-around;
+    }
+    .main {
+      padding: 30px;
+    }
+
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section h2 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #000;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding-bottom: 5px;
+    }
+
+    .profile, .experience,.education, .skills,.languages,.links {
+      display: flex;
+      justify-content: space-around;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .profile h2, .experience h2, .education h2,.skills h2,.languages h2,.links h2{
+      flex: 1;
+    }
+    .profile p , .experience .experience-item, .education .education-item, .skills ul,.languages div,.links div{
+      flex: 3;
+    }
+    .left-column .section {
+      margin-bottom: 20px;
+  }
+
+  .left-column .section h3 {
+      font-size: 18px;
+      margin: 10px 0;
+      color: #555;
+    margin-bottom: -11px;
+  }
+  .left-column .section h4{
+    margin-bottom: -10px;
+  }
+
+  .left-column .section p {
+      font-size: 14px;
+      margin: 5px 0;
+      line-height: 1.6;
+      color: #666;
+      text-align: justify;
+      margin-top: 10px;
+  }
+
+.skills ul {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+  }
+.skills ul li {
+      font-size: 12px;
+      color: #000;
+      font-weight: bold;
+      padding: 10px;
+      background-color: #f0f8f0;
+      border-radius: 20px;
+  }
+
+.skill {
+    margin-bottom: 10px;
+}
+
+.skills .skill p {
+    margin: 0;
+    font-size: 14px;
+}
+data{
+  color: #555;
+}
+.skills .progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    height: 3px;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.skills .progress-bar span {
+    display: block;
+    height: 100%;
+    background-color: #000;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="profile.jpg" alt="Profile Picture">
+      <h1>Rick Tang</h1>
+      <p>Product Designer</p>
+
+      <div class="contact-info">
+        <a href="">San Francisco, California</a> <a href="">ricktang@gmail.com</a> <a href="">(315) 802-8179</a>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="left-column">
+        <div class="section profile">
+          <h2>01 Profile</h2>
+          <p>UX/UI specialist focused on designing clean and functional projects across all platforms and devices in response to specific briefs and problems, while always maintaining a unique look and feel.</p>
+        </div>
+
+        <div class="section experience">
+          <h2>02 Experience</h2>
+
+          <div class="experience-item">
+            <h3>Uber - Product Designer</h3>
+            <p>Mar 2015 - Present</p>
+            <ul>
+              <li>Designed safety-focused experiences for Riders and Drivers</li>
+              <li>Physical space problem solving and its interaction with the digital</li>
+              <li>Navigated organization to achieve operational improvements</li>
+            </ul>
+            <h3>IFTTT - Product Designer</h3>
+            <p>Dec 2013 - Mar 2015</p>
+            <ul>
+              <li>Product and system design for a complex product</li>
+              <li>Designed both consumer and developer products for IFTTT</li>
+              <li>Maintained design across iOS, Android, and web</li>
+            </ul>
+            <h3>Facebook - Product Designer</h3>
+            <p>June 2013 - Sep 2013</p>
+            <ul>
+              <li>Designed and prototyped internal tools</li>
+              <li>Worked with Privacy team to build assets and features</li>
+              <li>Redesigned Newsfeed curation experience for mobile</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section education">
+          <h2>03 Education</h2>
+          <div class="education-item">
+            <h3>Brown University</h3>
+            <p>Interdisciplinary studies, Sep 2010 - May 2013</p>
+          </div>
+        </div>
+      </div>
+
+        <div class="section skills">
+          <h2>04 Skills</h2>
+          <ul>
+            <li>Figma</li>
+            <li>Sketch</li>
+            <li>Photoshop</li>
+            <li>Illustrator</li>
+            <li>Adobe XD</li>
+            <li>Principle</li>
+          </ul>
+        </div>
+
+        <div class="section languages">
+          <h2>05 Languages</h2>
+          <div>
+            <data>English: C2</data>
+            |
+            <data>Italian: B2</data>
+          </div>
+        </div>
+
+        <div class="section links">
+          <h2>06 Links</h2>
+          <div>
+            <data>Behance</data> |
+            <data>LinkedIn</data> |
+            <data>Twitter</data>
+          </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>
