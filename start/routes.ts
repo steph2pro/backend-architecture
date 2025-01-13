@@ -31,9 +31,13 @@ router.group(() => {
   router.post('/verify-otp', [ForetPasswordsController, 'verifyOtp'])
   router.post('/update-password', [ForetPasswordsController, 'updatePassword'])
   //cv builder
-  router.post('templates', [TemplatesController, 'listTemplates'])
-  router.post('generate-pdf', [TemplatesController, 'generatePDF'])
+  router.post('template-store', [TemplatesController, 'store'])
+  router.get('template-index', [TemplatesController, 'index'])
+  router.get('template-getCVTemplate', [TemplatesController, 'getCVTemplate'])
 
+  router.get('/test', async ({ view }) => {
+    return view.render('template')
+  })
 
 }).prefix('/api');
 

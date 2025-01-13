@@ -1,73 +1,87 @@
+import prisma from '#services/prisma';
 import type { HttpContext } from '@adonisjs/core/http'
-import Puppeteer from 'puppeteer';
+// import Puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 export default class TemplatesController {
+
+  public async store({ request, response }: HttpContext) {
+    const { image_apercue, options } = request.only(['image_apercue', 'options'])
+
+    const template = await prisma.template_cv.create({
+      data: { image_apercue, options },
+    })
+
+    return response.json({
+      message:'template enregistrer avec succes',
+      data:template
+    })
+  }
+
    // Endpoint pour récupérer la liste des templates
-   public async listTemplates({ response }: HttpContext) {
-    try {
-      // Convertir import.meta.url en chemin absolu et décoder les caractères encodés (e.g., %20)
-      const __dirname = path.dirname(decodeURIComponent(new URL(import.meta.url).pathname));
-
-      // Construire le chemin vers le dossier templates
-      const templatesPath =
-      // '../../templates'
-      path.join(__dirname, '../../../templates');
-
-      // Vérifier si le dossier templates existe
-      if (!fs.existsSync(templatesPath)) {
-        return response.status(404).json({ error: 'Dossier templates introuvable.' });
-      }
-
-      // Lire les fichiers du dossier
-      const templates = fs.readdirSync(templatesPath).map((file) => ({
-        id: path.basename(file, '.html'),
-        name: file,
-      }));
-
-      // Retourner les templates au client
-      return response.status(200).json({ templates });
-    }  catch (error) {
-      console.error('Erreur lors de la récupération des templates :', error);
-      return response.status(500).json({ error: 'Échec de la récupération des templates.' });
-    }
+  public async index({ response }: HttpContext) {
+    const templates = await prisma.template_cv.findMany()
+    return response.json(templates)
   }
 
-  // Endpoint pour générer un PDF
-  public async generatePDF({ request, response }: HttpContext) {
-    const { id, data } = request.only(['id', 'data']); // id: ID du template, data: données utilisateur
-    const templatesPath = path.join(__dirname, '../../../templates');
-    const templatePath = path.join(templatesPath, `${id}.html`);
 
-    try {
-      // Vérifiez si le fichier template existe
-      if (!fs.existsSync(templatePath)) {
-        return response.status(404).json({ error: 'Template non trouvé.' });
-      }
+   // const {
+    //   nomComplet,
+    //   titre,
+    //   email,
+    //   telephone,
+    //   address,
+    //   ville,
+    //   profil,
+    //   formations,
+    //   experiences,
+    //   stages,
+    //   competences,
+    //   langues,
+    //   loisirs
+    // }=request.all()
 
-      // Chargez le contenu du template
-      let html = fs.readFileSync(templatePath, 'utf8');
+  public async getCVTemplate({ request,response, view }:HttpContext) {
 
-      // Remplacez les placeholders par les données utilisateur
-      for (const key in data) {
-        const regex = new RegExp(`{{${key}}}`, 'g');
-        html = html.replace(regex, data[key]);
-      }
+    const data = {
+      title: 'CV Design',
+      profileImage: '/path/to/profile.jpg',
+      fullname: 'Steph Kamga',
+      jobTitle: 'web Designer',
+      address: 'San Francisco, California',
+      phone: '(315) 802-8479',
+      email: 'ricktang@gmail.com',
+      profileDescription: `I’m a product designer focused on ensuring great user experience
+                and meeting business needs of designed products.`,
+      skills: [
+        { name: 'Figma', level: 90 },
+        { name: 'Sketch', level: 80 },
+        { name: 'Adobe Photoshop', level: 85 },
+      ],
+      experiences: [
+        {
+          company: 'Uber',
+          role: 'Product Designer',
+          period: 'Mar 2015 - Present',
+          tasks: [
+            'Designed safety-focused experiences for Riders and Drivers',
+            'Physical space problem solving and its interaction with the digital',
+          ],
+        },
+      ],
+      educations: [
+        { institution: 'Brown University', degree: 'Interdisciplinary studies', period: 'Sep 2010 - May 2013' },
+      ],
+      languages: ['English', 'Italian'],
+    };
+    // const html =
 
-      // Lancez Puppeteer pour générer le PDF
-      const browser = await Puppeteer.launch();
-      const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'domcontentloaded' });
-      const pdfBuffer = await page.pdf({ format: 'A4' });
+    // Rendu du template avec Edge
+    return view.render('template2', data);
 
-      await browser.close();
-
-      // Retournez le PDF sous forme de fichier téléchargeable
-      response.header('Content-Type', 'application/pdf');
-      return response.send(pdfBuffer);
-    } catch (error) {
-      console.error('Erreur lors de la génération du PDF :', error);
-      return response.status(500).json({ error: 'Échec de la génération du PDF.' });
-    }
+    // Retourner le HTML comme réponse
+    // return response.send(
+    //   html);
   }
+
 }

@@ -28,3 +28,9 @@ model OtpToken {
 
   @@index([email]) // Index pour rechercher rapidement par email
 }
+
+model Template_cv {
+  id           Int      @id @default(autoincrement())
+  image_apercue String
+  options      String[]
+}

@@ -60,6 +60,7 @@
     "@prisma/client": "^5.22.0",
     "@vinejs/vine": "^2.1.0",
     "bcryptjs": "^2.4.3",
+    "edge.js": "^6.2.0",
     "firebase-admin": "^13.0.1",
     "firebase-functions": "^6.1.2",
     "jsonwebtoken": "^9.0.2",

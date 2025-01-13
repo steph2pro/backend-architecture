@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar {
+            width: 30%;
+            background-color: #224c3b;
+            color: #fff;
+            padding: 70px;
+        }
+        .sidebar img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sidebar h1 {
+            font-size: 24px;
+            text-align: center;
+        }
+        .sidebar h2 {
+            font-size: 18px;
+            text-align: center;
+            font-weight: normal;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        .sidebar .details, .sidebar .skills {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .sidebar .details p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        data {
+            opacity: 0.7;
+        }
+        .sidebar .skills .skill {
+            margin-bottom: 10px;
+        }
+        .sidebar .skills .skill p {
+            margin: 0;
+            font-size: 14px;
+        }
+        .sidebar .skills .progress-bar {
+            width: 100%;
+            background-color: #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 3px;
+            margin-top: 5px;
+        }
+        .sidebar .skills .progress-bar span {
+            display: block;
+            height: 100%;
+            background-color: #76c7c0;
+        }
+        .main-content {
+            width: 70%;
+            padding: 40px;
+        }
+        .main-content h2 {
+            font-size: 25px;
+            margin-bottom: 15px;
+            color: #333;
+            margin-bottom: 25px;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 25px;
+        }
+        .main-content .section {
+            margin-bottom: 20px;
+        }
+        .main-content .section h3 {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #555;
+        }
+        .main-content .section p {
+            font-size: 14px;
+            margin: 5px 0;
+            line-height: 1.6;
+            color: #666;
+            text-align: justify;
+        }
+        .main-content .section ul {
+            margin: 10px 0 0;
+            padding-left: 20px;
+            list-style: disc;
+        }
+        .main-content .section ul li {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <img src="{{ profileImage }}" alt="Profile Picture">
+            <h1>{{ name }}</h1>
+            <h2>{{ jobTitle }}</h2>
+            <div class="details">
+                <h3>Details</h3>
+                <p><h4>Address:</h4><data>{{ address }}</data></p>
+                <p><h4>Phone:</h4><data>{{ phone }}</data></p>
+                <p><h4>Email:</h4><data>{{ email }}</data></p>
+            </div>
+            <div class="links">
+                <h3>Links</h3>
+                <p><data>{{ linkedIn }}</data></p>
+                <p><data>{{ dribbble }}</data></p>
+                <p><data>{{ behance }}</data></p>
+            </div>
+            <div class="skills">
+                <h3>Skills</h3>
+                @each(skill in skills)
+                <div class="skill">
+                    <data>{{ skill.name }}</data>
+                    <div class="progress-bar"><span style="width: {{ skill.percentage }}%;"></span></div>
+                </div>
+                @endeach
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="section">
+                <h2>Profile</h2>
+                <p>{{ profileDescription }}</p>
+            </div>
+            <div class="section">
+                <h2>Experience</h2>
+                @each(experience in experiences)
+                <h3>{{ experience.company }} - {{ experience.role }} ({{ experience.duration }})</h3>
+                <ul>
+                    @each(task in experience.tasks)
+                    <li>{{ task }}</li>
+                    @endeach
+                </ul>
+                @endeach
+            </div>
+            <div class="section">
+                <h2>Education</h2>
+                @each(education in educations)
+                <h3>{{ education.institution }}</h3>
+                <p>{{ education.degree }}, {{ education.period }}</p>
+                @endeach
+            </div>
+            <div class="section">
+                <h2>Languages</h2>
+                @each(language in languages)
+                <p>{{ language }}</p>
+                @endeach
+            </div>
+        </div>
+    </div>
+</body>
+</html>
