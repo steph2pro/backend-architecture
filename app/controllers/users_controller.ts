@@ -1,55 +1,115 @@
-
-import Env from '#start/env'
-import prisma from '#services/prisma';
-import type { HttpContext } from '@adonisjs/core/http'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import prisma from "#services/prisma"
+import { HttpContext } from "@adonisjs/core/http"
+import hash from '@adonisjs/core/services/hash'
+import { messages } from '@vinejs/vine/defaults';
 
 export default class UsersController {
-  public async getAllUsers({ request, response }: HttpContext) {
-    const { local } = request.headers();
-
-    console.log("je suis local")
-    console.log(local)
+  // CREATE: Ajouter un utilisateur
+  public async store({ request, response }: HttpContext) {
     try {
+      // Validation des données d'entrée
+      const data = request.only(['name', 'email', 'phone', 'password', 'role', 'status'])
 
-      // Pagination : Récupération des paramètres de page et limite
-      const page = Number(request.input('page', 1)); // Page par défaut : 1
-      const limit = Number(request.input('limit', 10)); // Limite par défaut : 10
-      const skip = (page - 1) * limit;
+      // Vérification des champs requis
+      if (!data.name || !data.email || !data.password) {
+        return response.status(400).json({
+          message: 'Name, email, and password are required.',
+        })
+      }
 
-      // Récupération des utilisateurs avec pagination
-      const users = await prisma.user.findMany({
-        skip,
-        take: limit,
-        select: {
-          id: true,
-          email: true,
-          phone: true,
-          createdAt: true, // Inclure uniquement les champs nécessaires
+      // Vérification si l'email existe déjà
+      const existingUser = await prisma.user.findUnique({
+        where: { email: data.email },
+      })
+      if (existingUser) {
+        return response.status(400).json({
+          message: 'Email is already in use.',
+        })
+      }
 
-        },
-      });
+      // Hachage du mot de passe
+      const hashedPassword = await hash.make(data.password)
 
-      // Compte total des utilisateurs pour la pagination
-      const totalUsers = await prisma.user.count();
-
-      // Réponse paginée
-      return response.status(200).json({
-        message: local === 'fr' ? 'Utilisateurs récupérés' : 'Users fetched successfully',
+      // Création de l'utilisateur
+      const user = await prisma.user.create({
         data: {
-          users,
-          pagination: {
-            page,
-            limit,
-            total: totalUsers,
-          },
+          ...data,
+          password: hashedPassword, // Remplacement du mot de passe par le mot de passe haché
         },
-      });
+      })
+
+      // Retourner la réponse
+      return response.status(201).json({
+        message: 'User created successfully.',
+        user,
+      })
     } catch (error) {
-      return response.status(401).json({
-        message: local === 'fr' ? 'Token invalide ou expiré' : 'Invalid or expired token',
+      console.error('Error creating user:', error)
+
+      // Gestion des erreurs
+      return response.status(500).json({
+        message: 'An error occurred while creating the user.',
         error: error.message,
-      });
+      })
+    }
+  }
+
+  // READ: Récupérer tous les utilisateurs
+  public async index({ response }: HttpContext) {
+    const users = await prisma.user.findMany({
+      include:{
+        professions:true,
+        comments:true
+      }
+    })
+    return response.ok(users)
+  }
+
+  // READ: Récupérer un utilisateur par ID
+  public async show({ params, response }: HttpContext) {
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(params.id) },
+      include:{
+        professions:true,
+        comments:true
+      }
+    })
+    if (!user) {
+      return response.notFound({ message: 'User not found' })
+    }
+    return response.ok(user)
+  }
+
+  // UPDATE: Mettre à jour un utilisateur
+  public async update({ params, request, response }: HttpContext) {
+    const data = request.only(['name', 'email', 'phone', 'password', 'role', 'status'])
+
+    try {
+      const user = await prisma.user.update({
+        where: { id: parseInt(params.id) },
+        data,
+      })
+      return response.ok(user)
+    } catch (error) {
+      return response.status(500).json({
+        message: 'User not found or update failed',
+        error: error.message, // Vous pouvez renvoyer le message d'erreur détaillé
+      })
+    }
+    // catch (error) {
+    //   return response.notFound({ message: 'User not found or update failed', error:error.messages })
+    // }
+  }
+
+  // DELETE: Supprimer un utilisateur
+  public async destroy({ params, response }: HttpContext) {
+    try {
+      await prisma.user.delete({
+        where: { id: parseInt(params.id) },
+      })
+      return response.ok({ message: 'User deleted successfully' })
+    } catch (error) {
+      return response.notFound({ message: 'User not found or delete failed', error })
     }
   }
 }

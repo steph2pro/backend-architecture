@@ -8,16 +8,6 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id            Int       @id @default(autoincrement())
-  name          String
-  email         String    @unique
-  phone         String    @unique
-  password      String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  refreshToken  String[]  // Tableau de chaînes, non nul, vide par défaut
-}
 model OtpToken {
   id        Int      @id @default(autoincrement())
   email     String
@@ -34,3 +24,71 @@ model Template_cv {
   image_apercue String
   options      String[]
 }
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String
+  email         String    @unique
+  phone         String    @unique
+  password      String
+  role          String    @default("user") // Exemple de valeur par défaut
+  status        String    @default("active") // Exemple de valeur par défaut
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  refreshToken  String[]  // Tableau de chaînes, non nul, vide par défaut
+  professions   Profession[]
+  comments      ProfessionComment[]
+}
+model Profession {
+  id            Int               @id @default(autoincrement())
+  name          String
+  userId        Int
+  tabs          String[]
+  categoryId    Int
+  category      ProfessionCategory @relation(fields: [categoryId], references: [id])
+  user          User              @relation(fields: [userId], references: [id])
+  videos        ProfessionVideo[]
+  comments      ProfessionComment[] @relation("ProfessionComments")
+}
+
+model ProfessionCategory {
+  id    Int    @id @default(autoincrement())
+  title String
+  icon  String
+  professions Profession[]
+}
+
+model ProfessionComment {
+  id            Int               @id @default(autoincrement())
+  senderId      Int
+  professionVideoId Int
+  professionId  Int
+  profession    Profession        @relation("ProfessionComments", fields: [professionId], references: [id])
+  content       String
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  parentId      Int?              // Optional for nested comments
+  parent        ProfessionComment? @relation("ParentComments", fields: [parentId], references: [id])
+  replies       ProfessionComment[] @relation("ParentComments")
+  video         ProfessionVideo   @relation(fields: [professionVideoId], references: [id])
+  sender        User              @relation(fields: [senderId], references: [id])
+}
+
+model ProfessionVideo {
+  id          Int       @id @default(autoincrement())
+  thumbnail   String    // URL of the video's thumbnail
+  professionId Int
+  youtubeId   String    // YouTube video ID
+  profession  Profession @relation(fields: [professionId], references: [id])
+  comments    ProfessionComment[]
+}
+model Course {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  contenu     String   // Contenu du cours
+  duration    Int      // Durée en heures
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
