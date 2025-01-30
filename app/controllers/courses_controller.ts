@@ -18,7 +18,7 @@ export default class CourseController {
           duration
         }
       })
-      return response.status(201).json(course)
+      return response.status(201).json({course})
     } catch (error) {
       return response.status(500).json({ message: 'Erreur lors de la création du cours', error: error.message })
     }
@@ -28,7 +28,7 @@ export default class CourseController {
   public async index({ response }: HttpContext) {
     try {
       const courses = await prisma.course.findMany()
-      return response.status(200).json(courses)
+      return response.status(200).json({courses})
     } catch (error) {
       return response.status(500).json({ message: 'Erreur lors de la récupération des cours', error: error.message })
     }

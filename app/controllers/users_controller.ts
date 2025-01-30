@@ -79,6 +79,36 @@ export default class UsersController {
     }
     return response.ok(user)
   }
+  public async getMentors({ response }: HttpContext) {
+    try {
+      // Requête pour récupérer tous les mentors
+      const mentors = await prisma.user.findMany({
+        where: { role: 'mentor' },
+        include: {
+          professions: true,
+          comments: true,
+        },
+      });
+
+      // Vérification si aucun mentor n'est trouvé
+      if (!mentors || mentors.length === 0) {
+        return response.status(404).json({
+          success: false,
+          message: 'No mentors found',
+        });
+      }
+
+      // Retourner les mentors trouvés
+      return response.status(200).json( {mentors});
+    } catch (error) {
+      // Gestion des erreurs en cas d'échec de la requête ou autre problème
+      return response.status(500).json({
+        success: false,
+        message: 'An error occurred while fetching mentors',
+        error: error.message,
+      });
+    }
+  }
 
   // UPDATE: Mettre à jour un utilisateur
   public async update({ params, request, response }: HttpContext) {

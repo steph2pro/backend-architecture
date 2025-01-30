@@ -38,6 +38,7 @@ router.group(() => {
   router.get('user-show/:id', [UsersController,'show'])
   router.put('user-update/:id', [UsersController,'update'])
   router.delete('user-destroy/:id', [UsersController,'destroy'])
+  router.get('user-getMentors/', [UsersController,'getMentors'])
   //Course
   router.post('course-store', [CoursController, 'store'])
   router.get('course-index', [CoursController, 'index'])
@@ -50,24 +51,25 @@ router.group(() => {
   router.get('template-index', [TemplatesController, 'index'])
   router.get('template-getCVTemplate', [TemplatesController, 'getCVTemplate'])
   //Orientation
-  router.post('orientation-createPof', [OrientationsController, 'createProfession'])
-  router.get('orientation-getAllPof', [OrientationsController, 'getAllProfessions'])
-  router.get('orientation-getPofById/:id', [OrientationsController,'getProfessionById'])
-  router.put('orientation-updatePof/:id', [OrientationsController,'updateProfession'])
-  router.delete('orientation-deleteProf/:id', [OrientationsController,'deleteProfession'])
+  router.post('/orientation-createPof', [OrientationsController, 'createProfession'])
+  router.get('/orientation-getAllPof', [OrientationsController, 'getAllProfessions'])
+  router.get('/orientation-getPofByCategoryId/:categoryId', [OrientationsController,'getProfessionByCategory'])
+  router.get('/orientation-getPofById/:id', [OrientationsController,'getProfessionById'])
+  router.put('/orientation-updatePof/:id', [OrientationsController,'updateProfession'])
+  router.delete('/orientation-deleteProf/:id', [OrientationsController,'deleteProfession'])
 
-  router.post('orientation-createVideo', [OrientationsController, 'createVideo'])
-  router.get('orientation-getAllVideo', [OrientationsController, 'getAllVideos'])
-  router.get('orientation-getVideoById/:id', [OrientationsController,'getVideoById'])
-  router.put('orientation-updateVideo/:id', [OrientationsController,'updateVideo'])
-  router.delete('orientation-deleteVideo/:id', [OrientationsController,'deleteVideo'])
+  router.post('/orientation-createVideo', [OrientationsController, 'createVideo'])
+  router.get('/orientation-getAllVideo', [OrientationsController, 'getAllVideos'])
+  router.get('/orientation-getVideoById/:id', [OrientationsController,'getVideoById'])
+  router.put('/orientation-updateVideo/:id', [OrientationsController,'updateVideo'])
+  router.delete('/orientation-deleteVideo/:id', [OrientationsController,'deleteVideo'])
 
-  router.get('orientation-getAllComments', [OrientationsController, 'getAllComments'])
-  router.delete('orientation-deleteComment/:id', [OrientationsController,'deleteComment'])
+  router.get('/orientation-getAllComments', [OrientationsController, 'getAllComments'])
+  router.delete('/orientation-deleteComment/:id', [OrientationsController,'deleteComment'])
 
-  router.post('orientation-createCategory', [OrientationsController, 'createCategory'])
-  router.get('orientation-getAllCat', [OrientationsController, 'getAllCategories'])
-  router.post('orientation-createComment', [OrientationsController, 'createComment'])
+  router.post('/orientation-createCategory', [OrientationsController, 'createCategory'])
+  router.get('/orientation-getAllCat', [OrientationsController, 'getAllCategories'])
+  router.post('/orientation-createComment', [OrientationsController, 'createComment'])
 
   router.get('/test', async ({ view }) => {
     return view.render('template')

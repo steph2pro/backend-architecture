@@ -35,9 +35,34 @@ export default class OrientationsController {
           comments: true,
         },
       })
-      return response.status(200).json(professions)
+      return response.status(200).json({professions})
     } catch (error) {
-      return response.status(500).json({ error: 'Failed to fetch professions' })
+      return response.status(500).json({ message: 'Failed to fetch professions', error:error })
+    }
+  }
+  public async getProfessionByCategory({ params, response }: HttpContextContract) {
+    try {
+      const { categoryId } = params
+      
+      // Récupérer toutes les professions ayant le categoryId spécifié
+      const professions = await prisma.profession.findMany({
+        where: { categoryId: parseInt(categoryId) },
+        include: {
+          category: true,
+          user: true,
+          videos: true,
+          comments: true,
+        },
+      })
+
+      return response.status(200).json({
+         professions,
+      })
+    } catch (error) {
+      return response.status(500).json({
+        message: 'Une erreur est survenue',
+        error: error,
+      })
     }
   }
 
@@ -127,7 +152,7 @@ export default class OrientationsController {
       const categories = await prisma.professionCategory.findMany({
         include: { professions: true }, // Include related professions if needed
       })
-      return response.status(200).json(categories)
+      return response.status(200).json({categories})
     } catch (error) {
       console.error(error)
       return response.status(500).json({ error: `Failed to fetch categories: ${error.message}` })

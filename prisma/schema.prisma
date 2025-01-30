@@ -30,6 +30,7 @@ model User {
   email         String    @unique
   phone         String    @unique
   password      String
+  profil        String?
   role          String    @default("user") // Exemple de valeur par défaut
   status        String    @default("active") // Exemple de valeur par défaut
   createdAt     DateTime  @default(now())
@@ -42,6 +43,7 @@ model Profession {
   id            Int               @id @default(autoincrement())
   name          String
   userId        Int
+  thumbnail     String?  // Vérifie si cette ligne est présente
   tabs          String[]
   categoryId    Int
   category      ProfessionCategory @relation(fields: [categoryId], references: [id])
@@ -76,6 +78,7 @@ model ProfessionComment {
 model ProfessionVideo {
   id          Int       @id @default(autoincrement())
   thumbnail   String    // URL of the video's thumbnail
+  title   String?   // URL of the video's thumbnail
   professionId Int
   youtubeId   String    // YouTube video ID
   profession  Profession @relation(fields: [professionId], references: [id])
@@ -85,6 +88,7 @@ model Course {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
+  thumbnail   String?
   contenu     String   // Contenu du cours
   duration    Int      // Durée en heures
   createdAt   DateTime @default(now())
