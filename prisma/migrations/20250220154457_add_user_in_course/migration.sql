@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Course" ADD COLUMN     "userId" INTEGER NOT NULL DEFAULT 6;
+
+-- AddForeignKey
+ALTER TABLE "Course" ADD CONSTRAINT "Course_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

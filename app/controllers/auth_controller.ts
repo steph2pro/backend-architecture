@@ -5,8 +5,7 @@ import { RegisterValidator } from '#validators/register';
 import type { HttpContext } from '@adonisjs/core/http'
 import hash from '@adonisjs/core/services/hash'
 import jwt, { JwtPayload } from 'jsonwebtoken'
-// import Env from '@ioc:Adonis/Core/Env'
-import Env from '#start/env'
+import env from '#start/env'
 import { Prisma, User } from '@prisma/client';
 import { log } from 'console';
 import { errors } from '@adonisjs/core/dumper';
@@ -114,13 +113,13 @@ export default class AuthController {
       }
 
       // Génération des tokens
-      const accessToken = jwt.sign(user, Env.get('ACCESS_TOKEN_SECRET'), {
+      const accessToken = jwt.sign(user, env.get('ACCESS_TOKEN_SECRET'), {
         expiresIn: '15min',
       });
 
       const refreshToken = jwt.sign(
         {id:user.id},
-        Env.get('REFRESH_TOKEN_SECRET'),
+        env.get('REFRESH_TOKEN_SECRET'),
         { expiresIn: '24h' }
       );
 
@@ -170,7 +169,7 @@ public async refreshToken({ request, response }: HttpContext) {
     // Décoder et vérifier le refresh token
     const payload = jwt.verify(
       refresh_token,
-      Env.get('REFRESH_TOKEN_SECRET')
+      env.get('REFRESH_TOKEN_SECRET')
     );
 
     // Rechercher l'utilisateur correspondant
@@ -193,13 +192,13 @@ public async refreshToken({ request, response }: HttpContext) {
     // Générer de nouveaux tokens
     const accessToken = jwt.sign(
       user,
-      Env.get('ACCESS_TOKEN_SECRET'),
+      env.get('ACCESS_TOKEN_SECRET'),
       { expiresIn: '15min' }
     );
 
     const newRefreshToken = jwt.sign(
       { id: user.id },
-      Env.get('REFRESH_TOKEN_SECRET'),
+      env.get('REFRESH_TOKEN_SECRET'),
       { expiresIn: '24h' }
     );
 

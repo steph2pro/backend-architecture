@@ -38,18 +38,23 @@ model User {
   refreshToken  String[]  // Tableau de chaînes, non nul, vide par défaut
   professions   Profession[]
   comments      ProfessionComment[]
+  myCourse      Course[]
+  interests     Interest[] @relation("UserInterests")
+  userInterests UserInterest[]
+  courses       UserCourse[]
 }
 model Profession {
   id            Int               @id @default(autoincrement())
   name          String
   userId        Int
-  thumbnail     String?  // Vérifie si cette ligne est présente
-  tabs          String[]
+  thumbnail     String?
   categoryId    Int
   category      ProfessionCategory @relation(fields: [categoryId], references: [id])
   user          User              @relation(fields: [userId], references: [id])
   videos        ProfessionVideo[]
   comments      ProfessionComment[] @relation("ProfessionComments")
+  interests     Interest[]         @relation("ProfessionInterests")
+  professionInterests ProfessionInterests[]
 }
 
 model ProfessionCategory {
@@ -86,6 +91,7 @@ model ProfessionVideo {
 }
 model Course {
   id          Int      @id @default(autoincrement())
+  userId      Int       
   title       String
   description String?
   thumbnail   String?
@@ -93,6 +99,56 @@ model Course {
   duration    Int      // Durée en heures
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User              @relation(fields: [userId], references: [id])
+  students    UserCourse[]
+  interests     Interest[]         @relation("CourseInterests")
+  courseInterests CourseInterests[]
+}
+model UserCourse {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  progress  Int      @default(0)
+  status    String   @default("en cours")
+
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+model Interest {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  users       User[]     @relation("UserInterests")
+  professions Profession[] @relation("ProfessionInterests")
+  courses     Course[]     @relation("CourseInterests")
+  userInterests UserInterest[]
+  professionInterests ProfessionInterests[]
+  courseInterests CourseInterests[]
+}
+model UserInterest {
+  userId     Int
+  interestId Int
+  user       User     @relation(fields: [userId], references: [id])
+  interest   Interest @relation(fields: [interestId], references: [id])
+
+  @@id([userId, interestId])
+}
+model ProfessionInterests {
+  professionId     Int
+  interestId Int
+  profession       Profession     @relation(fields: [professionId], references: [id])
+  interest   Interest @relation(fields: [interestId], references: [id])
+
+  @@id([professionId, interestId])
 }
 
+model CourseInterests {
+  courseId     Int
+  interestId Int
+  course       Course     @relation(fields: [courseId], references: [id])
+  interest   Interest @relation(fields: [interestId], references: [id])
 
+  @@id([courseId, interestId])
+}

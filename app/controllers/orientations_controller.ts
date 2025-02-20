@@ -6,23 +6,44 @@ export default class OrientationsController {
   // Create a Profession
   public async createProfession({ request, response }: HttpContext) {
     try {
-      const data = request.only(['name', 'userId', 'categoryId','tabs'])
-      const profession = await prisma.profession.create({
-        data: {
-          name: data.name,
-          userId: data.userId,
-          categoryId: data.categoryId,
-          tabs: data.tabs,
-        },
-      })
-      return response.status(201).json(profession)
+        // Extraction des données de la requête
+        const data = request.only(['name', 'userId', 'categoryId', 'interests']);
+
+        // Vérification des intérêts (assurez-vous que c'est un tableau d'IDs)
+        if (!Array.isArray(data.interests)) {
+            return response.status(400).json({
+                message: "Invalid data: 'interests' must be an array of interest IDs",
+            });
+        }
+
+        // Création de la profession avec les relations aux centres d'intérêt
+        const profession = await prisma.profession.create({
+            data: {
+                name: data.name,
+                userId: data.userId,
+                categoryId: data.categoryId,
+                professionInterests: {
+                    create: data.interests.map((interestId: number) => ({
+                        interest: { connect: { id: interestId } }
+                    }))
+                }
+            },
+            include: {
+                professionInterests: {
+                    include: { interest: true }
+                }
+            }
+        });
+
+        return response.status(201).json(profession);
     } catch (error) {
-      return response.status(500).json({
-        message: 'Error creating Profession',
-        error: error.message, // Vous pouvez renvoyer le message d'erreur détaillé
-      })
+        return response.status(500).json({
+            message: 'Error creating Profession',
+            error: error.message,
+        });
     }
-  }
+}
+
 
   // Get all Professions
   public async getAllProfessions({ response }: HttpContext) {
@@ -40,10 +61,10 @@ export default class OrientationsController {
       return response.status(500).json({ message: 'Failed to fetch professions', error:error })
     }
   }
-  public async getProfessionByCategory({ params, response }: HttpContextContract) {
+  public async getProfessionByCategory({ params, response }: HttpContext) {
     try {
       const { categoryId } = params
-      
+
       // Récupérer toutes les professions ayant le categoryId spécifié
       const professions = await prisma.profession.findMany({
         where: { categoryId: parseInt(categoryId) },
@@ -95,25 +116,137 @@ export default class OrientationsController {
   // Update a Profession
   public async updateProfession({ params, request, response }: HttpContext) {
     try {
-      const { id } = params
-      const data = request.only(['name', 'userId', 'categoryId','tabs'])
-      const profession = await prisma.profession.update({
-        where: { id: parseInt(id) },
-        data: {
-          name: data.name,
-          userId: data.userId,
-          categoryId: data.categoryId,
-          tabs: data.tabs,
-        },
-      })
-      return response.status(200).json(profession)
-    } catch (error) {
-      return response.status(500).json({
-        message: 'Error uploading profession',
-        error: error.message, // Vous pouvez renvoyer le message d'erreur détaillé
-      })
+        const { id } = params;
+        const data = request.only(['name', 'userId', 'categoryId', 'interests']);
+
+        // Vérifier si la catégorie existe
+        const categoryExists = await prisma.professionCategory.findUnique({
+            where: { id: data.categoryId },
+        });
+
+        if (!categoryExists) {
+            return response.status(400).json({
+                message: "Invalid categoryId: Category does not exist",
+            });
+        }
+
+        // Vérification des intérêts
+        if (!Array.isArray(data.interests)) {
+            return response.status(400).json({
+                message: "Invalid data: 'interests' must be an array of interest IDs",
+            });
+        }
+
+        // Vérifier si les intérêts existent
+        const existingInterests = await prisma.interest.findMany({
+            where: { id: { in: data.interests } },
+        });
+
+        if (existingInterests.length !== data.interests.length) {
+            return response.status(400).json({
+                message: "One or more interests do not exist",
+            });
+        }
+
+        // Mise à jour de la profession
+        const profession = await prisma.profession.update({
+            where: { id: parseInt(id) },
+            data: {
+                name: data.name,
+                userId: data.userId,
+                categoryId: data.categoryId,
+                professionInterests: {
+                    deleteMany: {}, // Supprime les anciennes relations
+                    create: data.interests.map((interestId: number) => ({
+                        interest: { connect: { id: interestId } }
+                    }))
+                }
+            },
+            include: {
+                professionInterests: {
+                    include: { interest: true }
+                }
+            }
+        });
+
+            return response.status(200).json(profession);
+        } catch (error) {
+            return response.status(500).json({
+                message: "Error updating profession",
+                error: error.message,
+            });
+        }
     }
+     // Méthode pour obtenir les professions liées aux centres d'intérêt d'un utilisateur
+     public async getProfessionsByUserInterests({ params, response }: HttpContext) {
+      const { userId } = params; // Récupération du userId depuis l'URL
+
+      try {
+          // Vérifier si l'utilisateur existe
+          const userExists = await prisma.user.findUnique({
+              where: { id: parseInt(userId) },
+              include: {
+                  userInterests: true, // Récupérer uniquement les IDs des centres d'intérêt
+              },
+          });
+
+          if (!userExists) {
+              return response.status(404).json({ message: "Utilisateur non trouvé" });
+          }
+
+          // Récupérer les IDs des intérêts de l'utilisateur
+          const interestIds = userExists.userInterests.map(ui => ui.interestId);
+
+          let professions;
+          let message = "Professions basées sur les centres d'intérêt de l'utilisateur.";
+
+          if (interestIds.length === 0) {
+              // Aucun centre d'intérêt -> Retourner toutes les professions
+              professions = await prisma.profession.findMany({
+                  include: {
+                    category: true,
+                    user: true,
+                    videos: true,
+                    comments: true,
+                      // user: { select: { id: true, name: true } },
+                      // professionInterests: { include: { interest: true } },
+                  },
+              });
+              message = "Aucun centre d'intérêt trouvé pour cet utilisateur. Toutes les professions sont retournées.";
+          } else {
+              // Récupérer les professions associées aux intérêts
+              professions = await prisma.profession.findMany({
+                  where: {
+                      professionInterests: {
+                          some: {
+                              interestId: { in: interestIds },
+                          },
+                      },
+                  },
+                  include: {
+                    category: true,
+                    user: true,
+                    videos: true,
+                    comments: true,
+                      // category: true,
+                      // user: { select: { id: true, name: true } },
+                      // professionInterests: { include: { interest: true } },
+                  },
+              });
+          }
+
+          return response.status(200).json({ professions });
+
+      } catch (error) {
+          return response.status(500).json({
+              message: "Erreur interne du serveur",
+              error: error.message,
+          });
+      }
   }
+
+
+
 
   // Delete a Profession
   public async deleteProfession({ params, response }: HttpContext) {
