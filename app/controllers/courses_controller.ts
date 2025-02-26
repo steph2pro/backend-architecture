@@ -1,3 +1,4 @@
+import ResourceService from '#services/ressource_service';
 import type { HttpContext } from '@adonisjs/core/http'
 import { PrismaClient } from '@prisma/client'
 import { messages } from '@vinejs/vine/defaults';
@@ -7,36 +8,67 @@ const prisma = new PrismaClient()
 export default class CourseController {
   // Créer un nouveau cours
 public async store({ request, response }: HttpContext) {
-  const { title, description, contenu, duration, interestIds } = request.only(['title', 'userId', 'description', 'thumbnail','contenu', 'duration', 'interestIds'])
+    try {
+      // Extraction des données de la requête
+      const { title, userId, description, contenu, duration, interestIds } = request.only([
+        'title', 'userId', 'description', 'contenu', 'duration', 'interestIds'
+      ]);
 
-  try {
+      // Gestion du fichier image (thumbnail)
+      const file = request.file('thumbnail', {
+        size: '5mb',
+        extnames: ['jpg', 'png', 'jpeg', 'gif']
+      });
+
+      let thumbnailUrl: string | null = null;
+      if (file) {
+        // Récupérer le dernier ID pour nommer le fichier
+        const lastCourse = await prisma.course.findFirst({
+          orderBy: { id: 'desc' },
+          select: { id: true },
+        });
+
+        const newCourseId = (lastCourse?.id ?? 0) + 1;
+        const filePath = `course_thumbnails/${Date.now()}_course_${newCourseId}.${file.extname}`;
+        thumbnailUrl = await ResourceService.uploadFile(file as any, filePath);
+      }
+
+      // Vérification et conversion des IDs des intérêts
+      const validInterestIds = Array.isArray(interestIds)
+        ? interestIds.map(id => Number(id)).filter(id => !isNaN(id))
+        : [];
+
+      // Création du cours avec les relations aux centres d'intérêt
       const course = await prisma.course.create({
-          data: {
-              title,
-              description,
-              contenu,
-              userId,
-              duration,
-              courseInterests: {
-                  create: interestIds?.map((interestId: number) => ({
-                      interest: {
-                          connect: { id: interestId }
-                      }
-                  })) || []
-              }
-          },
-          include: {
-              courseInterests: {
-                  include: {
-                      interest: true
-                  }
-              }
+        data: {
+          title,
+          description,
+          contenu,
+          userId: Number(userId),
+          duration: Number(duration),
+          thumbnail: thumbnailUrl,
+          courseInterests: {
+            create: validInterestIds.map(interestId => ({
+              interest: { connect: { id: interestId } }
+            }))
           }
-      })
-      return response.status(201).json({ course })
-  } catch (error) {
-      return response.status(500).json({ message: 'Erreur lors de la création du cours', error: error.message })
-  }
+        },
+        include: {
+          courseInterests: {
+            include: { interest: true }
+          }
+        }
+      });
+
+      return response.status(201).json({ course });
+    } catch (error) {
+      return response.status(500).json({
+        message: 'Erreur lors de la création du cours',
+        error: error.message,
+      });
+    }
+
+
 }
 
   // Récupérer tous les cours
@@ -71,7 +103,7 @@ public async store({ request, response }: HttpContext) {
   // Mettre à jour un cours
   public async update({ params, request, response }: HttpContext) {
     const { title, description, contenu, duration, interestIds } = request.only(['title', 'description', 'contenu', 'duration', 'interestIds'])
-
+    const id  = parseInt(params.id);
     try {
         const existingCourse = await prisma.course.findUnique({
             where: { id: parseInt(params.id) },
@@ -82,21 +114,39 @@ public async store({ request, response }: HttpContext) {
             return response.status(404).json({ message: 'Cours introuvable pour la mise à jour' })
         }
 
+    // Gestion de l'image (optionnel)
+    let thumbnailUrl  = existingCourse?.thumbnail; // ⚠️ Garder l'ancienne image
+
+    const file = request.file('thumbnail', {
+        size: '5mb',
+        extnames: ['jpg', 'png', 'jpeg', 'gif'],
+    });
+
+    if (file) {
+        const filePath = `course_thumbnails/${Date.now()}_course_${id}.${file.extname}`;
+        thumbnailUrl = await ResourceService.uploadFile(file as any, filePath);
+    }
+
+      // Vérification et conversion des IDs des intérêts
+      const validInterestIds = Array.isArray(interestIds)
+        ? interestIds.map(id => Number(id)).filter(id => !isNaN(id))
+        : [];
+
+
         // Mise à jour des informations du cours
         const course = await prisma.course.update({
-            where: { id: parseInt(params.id) },
+            where: { id:Number(id) },
             data: {
                 title,
                 description,
                 contenu,
-                duration,
+                duration:Number(duration),
+                thumbnail:thumbnailUrl,
                 courseInterests: {
                     deleteMany: {}, // Supprime toutes les relations existantes
-                    create: interestIds?.map((interestId: number) => ({
-                        interest: {
-                            connect: { id: interestId }
-                        }
-                    })) || []
+                    create: validInterestIds.map(interestId => ({
+                      interest: { connect: { id: interestId } }
+                    }))
                 }
             },
             include: {

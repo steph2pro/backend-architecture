@@ -16,7 +16,8 @@ export default class AuthController {
       const {local}=request.headers()
     try {
       // Valider les données entrantes
-      const { name,email, phone, password } = await RegisterValidator.validate(request.all());
+      const { name,email, phone, password } = request.only(['name','email','phone','password'])
+      // await RegisterValidator.validate(request.all());
 
       // Vérifiez si l'utilisateur existe déjà
       const existingUserEmail = await prisma.user.findUnique({ where: { email:email } });

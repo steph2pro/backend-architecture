@@ -14,8 +14,8 @@ const supabase: SupabaseClient = createClient(
   env.get('SUPABASE_ANON_KEY')
 )
 
-const BUCKET_NAME = 'images'
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'application/pdf']
+const BUCKET_NAME = 'all_images'
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png','image/jpg','image/gif', 'application/pdf']
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 export default class ResourceService {

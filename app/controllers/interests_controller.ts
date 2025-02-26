@@ -24,8 +24,13 @@ export default class InterestsController {
   // Récupérer tous les centres d'intérêt
   async index({ response }: HttpContext) {
     try {
-      const interests = await prisma.interest.findMany()
-      return response.status(200).json(interests)
+      const interests = await prisma.interest.findMany({
+        include:{
+          professions:true,
+          professionInterests:true
+        }
+      })
+      return response.status(200).json({interests})
     } catch (error) {
       console.error(error)
       return response.status(500).json({ message: 'Erreur lors de la récupération des centres d\'intérêt' })

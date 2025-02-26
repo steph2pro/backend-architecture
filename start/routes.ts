@@ -37,10 +37,11 @@ router.group(() => {
   router.post('/update-password', [ForetPasswordsController, 'updatePassword'])
 
   //User
+  router.get('user-index/', [UsersController,'index'])
   router.post('user-store', [UsersController, 'store'])
   router.get('user-show/:id', [UsersController,'show'])
   router.put('user-update/:id', [UsersController,'update'])
-  router.put('user-interets/:id', [UsersController,'updateInterests'])
+  // router.put('user-interets/:id', [UsersController,'updateInterests'])
   // router.get('user-getInterests/:id', [UsersController,'getUserInterests'])
   router.delete('user-destroy/:id', [UsersController,'destroy'])
   router.get('user-getMentors/', [UsersController,'getMentors'])

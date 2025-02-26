@@ -145,8 +145,6 @@ import ResourceService, { ExtendedFile } from "#services/ressource_service";
           extnames: ['jpg', 'png', 'jpeg', 'gif']
         }) ;
 
-        console.log("File received:",file);
-
         // Vérification si l'email existe déjà
         const existingUser = await prisma.user.findUnique({
           where: { email: data.email },
@@ -164,7 +162,14 @@ import ResourceService, { ExtendedFile } from "#services/ressource_service";
         let profileUrl: string | null = null
         if (file) {
 
-          const filePath = "profiles/${Date.now()}_${file.clientName}"
+          // Récupérer le dernier ID et ajouter +1
+          const lastUser = await prisma.user.findFirst({
+            orderBy: { id: 'desc' },
+            select: { id: true },
+          })
+
+          const newUserId = (lastUser?.id ?? 0) + 1
+          const filePath = `user_profiles/${Date.now()}_user_${newUserId}.${file.extname}`
           profileUrl = await ResourceService.uploadFile(file as any, filePath)
         }
 
@@ -294,24 +299,60 @@ import ResourceService, { ExtendedFile } from "#services/ressource_service";
 
     // UPDATE: Mettre à jour un utilisateur
     public async update({ params, request, response }: HttpContext) {
-      const data = request.only(['name', 'email', 'phone', 'password', 'role', 'status'])
-
       try {
-        const user = await prisma.user.update({
+        // Récupérer les nouvelles données
+        const data = request.only(['name', 'email', 'phone', 'password', 'role', 'status'])
+
+        // Vérifier si l'utilisateur existe
+        const existingUser = await prisma.user.findUnique({
           where: { id: parseInt(params.id) },
-          data,
         })
-        return response.ok(user)
+
+        if (!existingUser) {
+          return response.status(404).json({ message: 'User not found' })
+        }
+
+        // Vérifier si un fichier est envoyé
+        const file = request.file('profil', {
+          size: '5mb',
+          extnames: ['jpg', 'png', 'jpeg', 'gif'],
+        })
+
+        let profileUrl = existingUser.profil // Conserver l'ancienne image s'il n'y en a pas de nouvelle
+
+        if (file) {
+          const filePath = `user_profiles/${Date.now()}_user_${params.id}.${file.extname}`
+          profileUrl = await ResourceService.uploadFile(file as any, filePath)
+        }
+
+        // Hachage du mot de passe uniquement s'il est modifié
+        if (data.password) {
+          data.password = await hash.make(data.password)
+        }
+
+        // Mise à jour de l'utilisateur
+        const updatedUser = await prisma.user.update({
+          where: { id: parseInt(params.id) },
+          data: {
+            ...data,
+            profil: profileUrl, // Met à jour l'image de profil si nécessaire
+          },
+        })
+
+        return response.ok({
+          message: 'User updated successfully',
+          user: updatedUser,
+        })
       } catch (error) {
+        console.error('Update Error:', error)
+
         return response.status(500).json({
-          message: 'User not found or update failed',
-          error: error.message, // Vous pouvez renvoyer le message d'erreur détaillé
+          message: 'An error occurred while updating the user',
+          error: error.message,
         })
       }
-      // catch (error) {
-      //   return response.notFound({ message: 'User not found or update failed', error:error.messages })
-      // }
     }
+
 
     // DELETE: Supprimer un utilisateur
     public async destroy({ params, response }: HttpContext) {
