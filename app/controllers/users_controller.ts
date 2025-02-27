@@ -154,6 +154,15 @@ import ResourceService, { ExtendedFile } from "#services/ressource_service";
             message: 'Email is already in use.',
           })
         }
+        // Vérification si l'email existe déjà
+        const existingUserPhone = await prisma.user.findUnique({
+          where: { phone: data.phone },
+        })
+        if (existingUserPhone) {
+          return response.status(400).json({
+            message: 'phone is already in use.',
+          })
+        }
 
         // Hachage du mot de passe
         const hashedPassword = await hash.make(data.password)
@@ -197,19 +206,6 @@ import ResourceService, { ExtendedFile } from "#services/ressource_service";
         })
       }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public async index({ request, response }: HttpContext) {
       // Récupérer les paramètres de la requête (page et perPage)

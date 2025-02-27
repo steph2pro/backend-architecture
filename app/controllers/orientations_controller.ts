@@ -363,11 +363,30 @@ public async updateProfession({ params, request, response }: HttpContext) {
    // CREATE a new ProfessionCategory
    public async createCategory({ request, response }: HttpContext) {
     try {
-      const data = request.only(['title', 'icon'])
+      const data = request.only(['title'])
+      const file = request.file('icon', {
+        size: '5mb',
+        extnames: ['jpg', 'png', 'jpeg', 'gif']
+    });
+
+    let iconlUrl: string ='';
+    // Upload de l'image si elle est présente
+    if (file) {
+        const lastCat = await prisma.professionCategory.findFirst({
+            orderBy: { id: 'desc' },
+            select: { id: true },
+        });
+
+        const newCatId = (lastCat?.id ?? 0) + 1;
+        const filePath = `categories_icons/${Date.now()}_Category_${newCatId}.${file.extname}`;
+        iconlUrl = await ResourceService.uploadFile(file as any, filePath);
+    }
+
+
       const category = await prisma.professionCategory.create({
         data: {
           title: data.title,
-          icon: data.icon,
+          icon: iconlUrl,
         },
       })
       return response.status(201).json(category)
@@ -413,12 +432,31 @@ public async updateProfession({ params, request, response }: HttpContext) {
   public async updateCategory({ params, request, response }: HttpContext) {
     try {
       const { id } = params
-      const data = request.only(['title', 'icon'])
+      const data = request.only(['title'])
+      // **Récupérer la category existante**
+      const existingCategory = await prisma.professionCategory.findUnique({
+          where: { id: Number(id) },
+          select: { icon: true },
+      });
+
+      // Gestion de l'image (optionnel)
+      let iconUrl  = existingCategory?.icon; // ⚠️ Garder l'ancienne image
+
+      const file = request.file('icon', {
+          size: '5mb',
+          extnames: ['jpg', 'png', 'jpeg', 'gif'],
+      });
+
+      if (file) {
+          const filePath = `categories_icons/${Date.now()}_category_${id}.${file.extname}`;
+          iconUrl = await ResourceService.uploadFile(file as any, filePath);
+      }
+
       const updatedCategory = await prisma.professionCategory.update({
         where: { id: parseInt(id, 10) },
         data: {
           title: data.title,
-          icon: data.icon,
+          icon: iconUrl,
         },
       })
 
@@ -595,7 +633,7 @@ public async updateVideo({ params, request, response }: HttpContext) {
   try {
     const { id } = params
     const data = request.only(['professionId', 'youtubeId','title'])
-    // **Récupérer la profession existante**
+    // **Récupérer la video existante**
     const existingVideo = await prisma.professionVideo.findUnique({
       where: { id: Number(id) },
       select: { thumbnail: true },
